@@ -52,17 +52,31 @@ To use any of the provided Docker Compose configurations:
    cd local-docker-options/02_n8n-postgres-redis-ollama-qdrant
    ```
 
-2. Create a `.env` file with the necessary environment variables (see README in each directory for details)
+2. Create the required data directories (see each directory's README for specific folders)
 
-3. Start the services:
+   For Standard Setup:
+
+   ```bash
+   mkdir -p n8n_data postgres_data redis_data
+   ```
+
+   For AI-Enhanced Setup:
+
+   ```bash
+   mkdir -p shared n8n_data postgres_data redis_data qdrant_data ollama_data
+   ```
+
+3. Create a `.env` file with the necessary environment variables (see README in each directory for details)
+
+4. Start the services:
 
    ```bash
    docker-compose up -d
    ```
 
-4. Access the n8n web interface at `http://localhost:5678` (or your configured port)
+5. Access the n8n web interface at `http://localhost:5678` (or your configured port)
 
-5. To stop the services:
+6. To stop the services:
 
    ```bash
    docker-compose down

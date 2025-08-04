@@ -61,3 +61,49 @@ This Docker Compose architecture creates a comprehensive workflow automation env
 
 All services are connected through an internal Docker network, with selected ports exposed for external access.
 
+### Environment Variables
+
+The setup uses environment variables for configuration, allowing easy customization of:
+
+- Connection details (host, ports)
+- Database credentials
+- Redis connection settings
+- Authentication settings
+
+### Data Folders
+
+The following folders need to be available before running the docker-compose setup:
+
+- `./shared`: For sharing files between n8n and Ollama
+- `./n8n_data`: Stores n8n configuration, workflows, and credentials
+- `./postgres_data`: Contains PostgreSQL database files
+- `./redis_data`: Stores Redis persistence data
+- `./qdrant_data`: Contains Qdrant vector database storage
+- `./ollama_data`: For Ollama model storage and configuration
+
+**_Note:_** These folders should be created in the same directory as your `docker-compose.yml` file. and should be empty before starting the containers for the first time.
+
+#### Creating Required Folders
+
+Before running the docker-compose setup, create these folders using one of the following commands based on your operating system:
+
+**DOS/CMD (Windows):**
+
+```cmd
+mkdir shared n8n_data postgres_data redis_data qdrant_data ollama_data
+```
+
+**PowerShell (Windows):**
+
+```powershell
+New-Item -ItemType Directory -Path "shared", "n8n_data", "postgres_data", "redis_data", "qdrant_data", "ollama_data" -Force
+```
+
+**Shell (Linux/macOS):**
+
+```bash
+mkdir -p shared n8n_data postgres_data redis_data qdrant_data ollama_data
+```
+
+Make sure to run these commands in the same directory as your docker-compose.yml file.
+

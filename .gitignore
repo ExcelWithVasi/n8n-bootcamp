@@ -1,0 +1,9 @@
+/local-docker-options/01_n8n-postgres-redis/postgres_data
+/local-docker-options/01_n8n-postgres-redis/redis_data
+/local-docker-options/01_n8n-postgres-redis/n8n_data
+
+/local-docker-options/02_n8n-postgres-redis-ollama-qdrant/postgres_data
+/local-docker-options/02_n8n-postgres-redis-ollama-qdrant/redis_data
+/local-docker-options/02_n8n-postgres-redis-ollama-qdrant/n8n_data
+/local-docker-options/02_n8n-postgres-redis-ollama-qdrant/qdrant_data
+/local-docker-options/02_n8n-postgres-redis-ollama-qdrant/ollama_data

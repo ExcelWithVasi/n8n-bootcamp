@@ -58,3 +58,38 @@ The setup uses environment variables for configuration, allowing easy customizat
 - Redis connection settings
 - Authentication settings
 - Encryption keys
+
+### Data Folders
+
+The following folders need to be available before running the docker-compose setup:
+
+- `./n8n_data`: Stores n8n configuration, workflows, and credentials
+- `./postgres_data`: Contains PostgreSQL database files
+- `./redis_data`: Stores Redis persistence data
+
+**_Note:_** These folders should be created in the same directory as your `docker-compose.yml` file. and should be empty before starting the containers for the first time.
+
+#### Creating Required Folders
+
+Before running the docker-compose setup, create these folders using one of the following commands based on your operating system:
+
+**DOS/CMD (Windows):**
+
+```cmd
+mkdir n8n_data postgres_data redis_data
+```
+
+**PowerShell (Windows):**
+
+```powershell
+New-Item -ItemType Directory -Path "n8n_data", "postgres_data", "redis_data" -Force
+```
+
+**Shell (Linux/macOS):**
+
+```bash
+mkdir -p n8n_data postgres_data redis_data
+```
+
+Make sure to run these commands in the same directory as your docker-compose.yml file.
+
