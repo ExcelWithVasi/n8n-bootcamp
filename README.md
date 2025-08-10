@@ -28,6 +28,17 @@ A comprehensive environment with built-in AI capabilities:
 
 **Best for**: AI-enhanced workflows, semantic search implementations, and projects requiring local LLM processing.
 
+### 3. LightRAG Setup (03_n8n-postgres-redis-lightrag)
+
+A specialized environment for Retrieval-Augmented Generation (RAG) implementations:
+
+- **n8n**: Core workflow automation engine
+- **Postgres**: Relational database for workflow data storage
+- **Redis**: In-memory data store and database for LightRAG
+- **LightRAG**: Retrieval-Augmented Generation system for AI-powered document search and knowledge retrieval
+
+**Best for**: Knowledge-intensive workflows, document processing, graph-based RAG implementations, and integration with OpenAI models.
+
 ## Component Overview
 
 Below is a brief introduction to each component and its purpose:
@@ -37,6 +48,7 @@ Below is a brief introduction to each component and its purpose:
 - **Postgres**: Relational database for storing workflow data and application state.
 - **Redis**: In-memory data store for caching, queues, and fast data access.
 - **Qdrant**: Vector database for semantic search and AI-powered similarity queries.
+- **LightRAG**: Retrieval-Augmented Generation system with graph representation for AI-powered document search and knowledge retrieval, using OpenAI models.
 
 Each component is included in the docker-compose setups to provide a complete environment for building, testing, and running advanced automation workflows with AI and data capabilities.
 
@@ -50,6 +62,8 @@ To use any of the provided Docker Compose configurations:
    cd local-docker-options/01_n8n-postgres-redis
    # OR
    cd local-docker-options/02_n8n-postgres-redis-ollama-qdrant
+   # OR
+   cd local-docker-options/03_n8n-postgres-redis-lightrag
    ```
 
 2. Create the required data directories (see each directory's README for specific folders)
@@ -64,6 +78,13 @@ To use any of the provided Docker Compose configurations:
 
    ```bash
    mkdir -p shared n8n_data postgres_data redis_data qdrant_data ollama_data
+   ```
+
+   For LightRAG Setup:
+
+   ```bash
+   mkdir -p n8n_data postgres_data redis_data
+   mkdir -p lightrag_data/rag_storage lightrag_data/inputs lightrag_data/tiktoken
    ```
 
 3. Create a `.env` file with the necessary environment variables (see README in each directory for details)
@@ -101,6 +122,13 @@ Each configuration directory contains its own README with more detailed informat
   - Knowledge base creation with semantic search
   - Text classification and extraction
   - AI-powered decision making
+- **LightRAG Setup**: Specialized for:
+  - Graph-based knowledge representation
+  - Advanced document retrieval systems
+  - Question-answering over documents
+  - Integration with OpenAI models for LLM and embeddings
+  - Custom RAG implementations via n8n API integration
+  - Interactive knowledge exploration via LightRAG UI
 
 ## Contributing
 

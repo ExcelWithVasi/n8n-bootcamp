@@ -1,0 +1,119 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT}:${N8N_PORT}"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://${N8N_HOST}:${N8N_PORT}/
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_SECURE_COOKIE=false # Only for local dev. Set to true and use a reverse proxy for production with HTTPS.
+
+      # Database configuration
+      - DB_TYPE=${DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD=${DB_POSTGRESDB_PASSWORD}
+      
+      # Redis configuration
+      - EXECUTIONS_MODE=${EXECUTIONS_MODE}
+      - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST}
+      - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      
+      # Recommended to add this for the permission warning
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16
+    # Use the build context for your custom Dockerfile
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_POSTGRESDB_DATABASE}
+      - POSTGRES_USER=${DB_POSTGRESDB_USER}
+      - POSTGRES_PASSWORD=${DB_POSTGRESDB_PASSWORD}
+    ports:
+      - '${DB_POSTGRESDB_PORT}:${DB_POSTGRESDB_PORT}'
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_POSTGRESDB_USER} -d ${DB_POSTGRESDB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ./redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+    
+  lightrag:
+    container_name: lightrag
+    image: ghcr.io/hkuds/lightrag:latest
+    ports:
+      - "${PORT:-9621}:9621"
+    volumes:
+      - ./lightrag_data/rag_storage:/app/data/rag_storage
+      - ./lightrag_data/inputs:/app/data/inputs
+      - ./lightrag_data/tiktoken:/app/data/tiktoken
+      - ./config.ini:/app/config.ini
+    environment:
+      - AUTH_ACCOUNTS=${AUTH_ACCOUNTS}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+      - LIGHTRAG_API_KEY=${LIGHTRAG_API_KEY}
+      - EMBEDDING_BINDING=${EMBEDDING_BINDING}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - EMBEDDING_DIM=${EMBEDDING_DIM}
+      - EMBEDDING_BINDING_HOST=${EMBEDDING_BINDING_HOST}
+      - EMBEDDING_BINDING_API_KEY=${EMBEDDING_BINDING_API_KEY}
+      - LLM_BINDING=${LLM_BINDING}
+      - LLM_MODEL=${LLM_MODEL}
+      - LLM_BINDING_HOST=${LLM_BINDING_HOST}
+      - LLM_BINDING_API_KEY=${LLM_BINDING_API_KEY}
+      - MAX_ASYNC=${MAX_ASYNC}
+      - MAX_PARALLEL_INSERT=${MAX_PARALLEL_INSERT}
+      - EMBEDDING_FUNC_MAX_ASYNC=${EMBEDDING_FUNC_MAX_ASYNC}
+      - EMBEDDING_BATCH_NUM=${EMBEDDING_BATCH_NUM}
+      - LIGHTRAG_KV_STORAGE=RedisKVStorage
+      - LIGHTRAG_DOC_STATUS_STORAGE=RedisDocStatusStorage
+      - REDIS_URI=redis://redis:6379
+      - REDIS_SOCKET_TIMEOUT=30
+      - REDIS_CONNECT_TIMEOUT=10
+      - REDIS_MAX_CONNECTIONS=100
+      - REDIS_RETRY_ATTEMPTS=3
+      - WEBUI_TITLE=${WEBUI_TITLE}
+      - WEBUI_DESCRIPTION=${WEBUI_DESCRIPTION}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
